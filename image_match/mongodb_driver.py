@@ -1,7 +1,7 @@
-from signature_database_base import SignatureDatabaseBase
-from signature_database_base import normalized_distance
+from .signature_database_base import SignatureDatabaseBase
+from .signature_database_base import normalized_distance
 from multiprocessing import cpu_count, Process, Queue
-from multiprocessing.managers import Queue as managerQueue
+
 import numpy as np
 
 
@@ -42,14 +42,14 @@ class SignatureMongo(SignatureDatabaseBase):
         super(SignatureMongo, self).__init__(*args, **kwargs)
 
     def search_single_record(self, rec, n_parallel_words=1, word_limit=None,
-                             process_timeout=None, maximum_matches=1000, filter=None):
+                             process_timeout=None, maximum_matches=1000):
         if n_parallel_words is None:
             n_parallel_words = cpu_count()
 
         if word_limit is None:
             word_limit = self.N
 
-        initial_q = managerQueue.Queue()
+        initial_q = Queue()
 
         [initial_q.put({field_name: rec[field_name]}) for field_name in self.index_names[:word_limit]]
 
